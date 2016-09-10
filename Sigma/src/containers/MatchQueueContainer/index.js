@@ -28,11 +28,15 @@ const styles = StyleSheet.create({
 
 class MatchQueueContainer extends Component {
   state = {
-    match_id: 0
+    match_id: 0,
+    timer: 0
   }
 
   pollMatchStarted() {
     setTimeout(() => {
+      this.setState(function(previousState) {
+        return {timer: previousState.timer + 1};
+      });
       fetch('http://45.33.83.217/harambe/poll_match', {
         method: 'POST',
         headers: {
@@ -87,6 +91,7 @@ class MatchQueueContainer extends Component {
       <View style={styles.container}>
         <View style={styles.statusView}>
           <Text style={styles.textStyle}>Waiting for a game</Text>
+          <Text style={styles.textStyle}>{this.state.timer}</Text>
         </View>
       </View>
     );
