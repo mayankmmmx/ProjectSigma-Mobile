@@ -33,7 +33,11 @@ class LauchContainer extends Component<void, void, void> {
         >
           <Text style={styles.textStyle}>Login</Text>
         </TouchableOpacity>
-
+        <TouchableOpacity
+          onPress={Actions.matchQueue}
+        >
+          <Text style={styles.textStyle}>Play</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={Actions.game}
         >

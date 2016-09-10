@@ -9,6 +9,7 @@ import Game from '@containers/GameContainer';
 import Countdown from '@containers/CountdownContainer';
 import Login from '@containers/LoginContainer';
 import CreateAccount from '@containers/CreateAccountContainer';
+import MatchQueue from '@containers/MatchQueueContainer';
 import SocketIO from '@containers/SocketIOContainer';
 
 const scenes = Actions.create(
@@ -18,6 +19,7 @@ const scenes = Actions.create(
     <Scene key="countdown" component={Countdown} title="Countdown" />
     <Scene key="login" component={Login} title="Login" />
     <Scene key="createAccount" component={CreateAccount} title="Create Account" />
+    <Scene key="matchQueue" component={MatchQueue} title="Match Queue" />
     <Scene key="socketIo" component={SocketIO} title="Socket IO" />
   </Scene>
 );

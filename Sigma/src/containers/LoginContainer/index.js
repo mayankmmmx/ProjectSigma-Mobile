@@ -72,6 +72,7 @@ class LoginContainer extends Component {
       console.log(responseJson);
       if(responseJson.auth_token != '') {
         AsyncStorage.setItem('auth_token', responseJson.auth_token);
+        AsyncStorage.setItem('username', state.username)
       }
     });
   }
