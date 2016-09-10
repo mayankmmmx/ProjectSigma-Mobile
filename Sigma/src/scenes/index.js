@@ -17,5 +17,6 @@ export default (): Element => (
   <Router
     scenes={scenes}
     getSceneStyle={getSceneStyle}
+    hideNavBar={true}
   />
 )
