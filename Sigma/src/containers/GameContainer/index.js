@@ -1,6 +1,7 @@
 /* @flow */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Platform,
   Text,
@@ -11,109 +12,47 @@ import {
   AsyncStorage,
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scoreView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    margin: 30,
-  },
-  questionView: {
-    flex: 1,
-    marginBottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textStyle: {
-    fontSize: 25,
-    textAlign: 'center',
-    margin: 10,
-  },
-  textInput: {
-    height: 30,
-    borderWidth: 1,
-    borderBottomColor: '#0f0f0f',
-    fontSize: 15,
-    padding: 4,
-    marginBottom: 235,
-    textAlign: 'center',
-  },
-  submitView: {
-    backgroundColor: '#4BB543',
-    height: 40,
-    justifyContent: 'center',
-  },
-  submitText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    alignSelf: 'center',
-  },
-  timerView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -45,
-  },
-  timerText: {
-    fontSize: 30,
-  },
-});
-
-const sampleQ = "Josh has 6 apples and he buys 10 times more. How many does he have now?";
+import Countdown from './countdown';
+import Question from './question';
+import * as GameActions from '../../store/actions/gameActions';
 
 class GameContainer extends Component {
-  state = {
-    timer: 15,
-  };
 
-  async getToken() {
-    const value = await AsyncStorage.getItem('auth_token');
-    console.log(value);
+  componentDidMount() {
+    this.props.dispatch(GameActions.getQuestions(1200));
   }
 
-  decrement() {
-    let currentTime = this.state.timer;
-    if(currentTime > 0) {
-      setTimeout(() => {
-        currentTime--;
-        this.setState({ timer: currentTime });
-      }, 1000);
-    }
+  renderLoading() {
+    return (
+      <Countdown />
+    );
+  }
+
+  renderGame() {
+    return (
+      <Question
+        currentQuestion={this.props.questions[this.props.index]}
+        index={this.props.index}
+      />
+    );
   }
 
   render() {
-    this.decrement();
-    return (
-      <View style={styles.container}>
-        <View style={styles.scoreView}>
-          <Text>User 1 Score</Text>
-          <Text>User 2 Score</Text>
-        </View>
-        <View style={styles.timerView}>
-          <Text style={styles.timerText}>{this.state.timer}</Text>
-        </View>
-        <View style={styles.questionView}>
-          <Text style={styles.textStyle}>{sampleQ}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => console.log("test")}
-        >
-          <View style={styles.submitView}>
-            <Text style={styles.submitText}>Submit</Text>
-          </View>
-        </TouchableOpacity>
-        <TextInput
-          keyboardType={'numeric'}
-          multiline={false}
-          maxLength={10}
-          style={styles.textInput}
-          autoFocus={true}
-        />
-      </View>
-    );
+    if(this.props.isReady) {
+      return this.renderGame();
+    } else {
+      return this.renderLoading();
+    }
   }
+
 }
 
-export default GameContainer;
+function mapStateToProps(state) {
+  return {
+    isReady: state.countdownReducer.isReady,
+    questions: state.gameReducers.roundQuestions.questions,
+    index: state.gameReducers.index,
+  };
+}
+
+export default connect(mapStateToProps)(GameContainer);

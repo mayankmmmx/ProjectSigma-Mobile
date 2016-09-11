@@ -9,6 +9,7 @@ import {
   View,
   TextInput,
   AsyncStorage,
+  Image,
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
 
@@ -17,19 +18,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusView: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   textStyle: {
     fontSize: 25,
     textAlign: 'center',
     margin: 10,
   },
+  loading: {
+    height: 50,
+    width: 50,
+  }
 });
 
 class MatchQueueContainer extends Component {
   state = {
     match_id: 0,
-    timer: 0
   }
 
   pollMatchStarted() {
@@ -53,6 +59,7 @@ class MatchQueueContainer extends Component {
         if (!responseJson['status']) {
           this.pollMatchStarted();
         } else {
+          Actions.game();
           console.log('match can start now');
         }
       });
@@ -90,8 +97,8 @@ class MatchQueueContainer extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.statusView}>
-          <Text style={styles.textStyle}>Waiting for a game</Text>
-          <Text style={styles.textStyle}>{this.state.timer}</Text>
+          <Text style={styles.textStyle}>Waiting for a game...</Text>
+          <Image source={require('../../img/ring-alt.gif')} style={styles.loading}/>
         </View>
       </View>
     );

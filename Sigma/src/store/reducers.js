@@ -1,3 +1,4 @@
-import counter from './modules/counter';
+import countdownReducer from './modules/countdownReducer';
+import gameReducers from './modules/gameReducers';
 
-export default counter;
+export {countdownReducer, gameReducers};
