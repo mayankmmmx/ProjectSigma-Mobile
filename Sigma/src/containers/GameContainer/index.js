@@ -14,6 +14,7 @@ import {
 import { Actions } from 'react-native-router-flux';
 import Countdown from './countdown';
 import Question from './question';
+import Results from './results';
 import * as GameActions from '../../store/actions/gameActions';
 
 class GameContainer extends Component {
@@ -29,39 +30,26 @@ class GameContainer extends Component {
   }
 
   renderGame() {
-    if(this.props.index > 9) {
-      const url = `http://hackforharambe.me/harambe/submit_match?p_one_id=${this.props.matchUsers.user1}&p_two_id=${this.props.matchUsers.user2}`;
-      fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log(responseJson);
-      });
+    return (
+      <Question
+        currentQuestion={this.props.questions[this.props.index]}
+        index={this.props.index}
+      />
+    );
+  }
 
-      return (
-        <View>
-        </View>
-      );
-    }
-    else {
-
-      return (
-        <Question
-          currentQuestion={this.props.questions[this.props.index]}
-          index={this.props.index}
-        />
-      );
-    }
+  renderResults() {
+    this.props.dispatch(GameActions.submitMatchResults(this.props.matchUsers.user1, this.props.matchUsers.user2));
+    return (
+      <Results />
+    );
   }
 
   render() {
-    if(this.props.isReady) {
+    if(this.props.isReady && this.props.index < 9) {
       return this.renderGame();
+    } else if(this.props.index > 8) {
+      return this.renderResults();
     } else {
       return this.renderLoading();
     }
@@ -70,12 +58,12 @@ class GameContainer extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log(state);
   return {
     isReady: state.countdownReducer.isReady,
     questions: state.gameReducers.roundQuestions.questions,
     index: state.gameReducers.index,
     matchUsers: state.gameReducers.matchUsers,
+    results: state.gameReducers.gameResults,
   };
 }
 

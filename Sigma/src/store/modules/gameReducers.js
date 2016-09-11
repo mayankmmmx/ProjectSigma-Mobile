@@ -6,6 +6,7 @@ const initialState = {
   matchUsers: {},
   matchId: '',
   leaderboard: {},
+  gameResults: {},
 }
 
 function gameReducers(state = initialState, action) {
@@ -29,6 +30,10 @@ function gameReducers(state = initialState, action) {
     case ActionTypes.SET_LEADERBOARD:
       return Object.assign({}, state, {
         leaderboard: action.users,
+      })
+    case ActionTypes.SET_SUBMIT_MATCH_RESULTS:
+      return Object.assign({}, state, {
+        gameResults: action.results,
       })
     default:
       return state

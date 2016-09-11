@@ -37,22 +37,22 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   textInput: {
-    height: 30,
+    height: 50,
     borderWidth: 1,
     borderBottomColor: '#0f0f0f',
-    fontSize: 15,
+    fontSize: 25,
     padding: 4,
     marginBottom: 235,
     textAlign: 'center',
   },
   submitView: {
     backgroundColor: '#4BB543',
-    height: 40,
+    height: 50,
     justifyContent: 'center',
   },
   submitText: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: 25,
     alignSelf: 'center',
   },
   timerView: {
@@ -78,6 +78,7 @@ class Question extends Component {
 
   decrement() {
     let currentTime = this.state.timer;
+    console.log(currentTime);
     if(currentTime > 0) {
       setTimeout(() => {
         currentTime--;
@@ -93,7 +94,7 @@ class Question extends Component {
             onPress: () => {
               this.props.dispatch(GameActions.setIndex(this.props.index + 1));
               this.props.dispatch(CountdownActions.setReady(false));
-              submitToApi(-1);
+              this.submitToApi(-1);
             }
           },
         ]
@@ -129,7 +130,7 @@ class Question extends Component {
   }
 
   submitToApi(score) {
-    fetch('http://45.33.83.217/harambe/poll_match', {
+    fetch('http://hackforharambe.me/harambe/poll_match', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -150,7 +151,7 @@ class Question extends Component {
       this.setState(function(previousState) {
         return {timer: previousState.timer + 1};
       });
-      fetch('http://45.33.83.217/harambe/poll_match', {
+      fetch('http://hackforharambe.me/harambe/poll_match', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -184,7 +185,9 @@ class Question extends Component {
   }
 
   render() {
-    this.decrement();
+    if(this.state.timer > 0) {
+      this.decrement();
+    }
     return (
       <View style={styles.container}>
         <View style={styles.scoreView}>

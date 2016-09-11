@@ -9,3 +9,4 @@ export const GET_MATCH_USERS = 'GET_MATCH_USERS';
 export const SET_MATCH_ID = 'SET_MATCH_ID';
 export const LOGOUT = 'LOGOUT';
 export const SET_LEADERBOARD = 'SET_LEADERBOARD';
+export const SET_SUBMIT_MATCH_RESULTS = 'SET_SUBMIT_MATCH_RESULTS';
