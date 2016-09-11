@@ -1,6 +1,7 @@
 /* @flow */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Platform,
   Text,
@@ -9,8 +10,10 @@ import {
   View,
   TextInput,
   AsyncStorage,
+  Image,
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import * as LoginActions from '../../store/actions/loginActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,13 +27,18 @@ const styles = StyleSheet.create({
   textInput: {
     height: 30,
     borderWidth: 1,
-    borderBottomColor: '#0f0f0f',
+    borderColor: '#494949',
     fontSize: 15,
     padding: 4,
     width: 300,
+    borderRadius: 10,
+    marginTop: 10,
+    textAlign: 'center',
   },
   loginText: {
     alignSelf: 'center',
+    color: '#494949',
+    fontSize: 20,
   },
   usernameView: {
     marginBottom: 50,
@@ -39,17 +47,25 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   loginButtonView: {
-    height: 40,
-    justifyContent: 'center',
-    marginBottom: 100,
+    width: 125,
+    height: 50,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#000000',
-    width: 100,
+    backgroundColor: '#EFEFEF',
+    borderColor: '#494949',
+    justifyContent: 'center',
+    marginBottom: 300,
   },
   loginButtonText: {
     fontSize: 15,
     alignSelf: 'center',
-  }
+  },
+  image: {
+    marginLeft: 10,
+    marginTop: 80,
+    width: 300,
+    height: 200,
+  },
 });
 
 class LoginContainer extends Component {
@@ -58,28 +74,11 @@ class LoginContainer extends Component {
     password: '',
   };
 
-  login() {
-    const url = `http://45.33.83.217/harambe/login?username=${this.state.username}&password=${this.state.password}`;
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-    })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      console.log(responseJson);
-      if(responseJson.auth_token != '') {
-        AsyncStorage.setItem('auth_token', responseJson.auth_token);
-        AsyncStorage.setItem('username', state.username)
-      }
-    });
-  }
   render() {
     return (
       <View style={styles.container}>
         <View style={styles.login}>
+          <Image source={require('../../img/login.png')} style={styles.image}/>
           <View style={styles.usernameView}>
             <Text style={styles.loginText}>User Name</Text>
             <TextInput
@@ -102,7 +101,7 @@ class LoginContainer extends Component {
             />
           </View>
           <TouchableOpacity
-            onPress={() => this.login()}
+            onPress={() => this.props.dispatch(LoginActions.login(this.state.username, this.state.password))}
           >
             <View style={styles.loginButtonView}>
               <Text style={styles.loginButtonText}>Login</Text>
@@ -114,4 +113,4 @@ class LoginContainer extends Component {
   }
 }
 
-export default LoginContainer;
+export default connect ()(LoginContainer);

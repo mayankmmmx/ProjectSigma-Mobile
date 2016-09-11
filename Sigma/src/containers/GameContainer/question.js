@@ -93,6 +93,7 @@ class Question extends Component {
             onPress: () => {
               this.props.dispatch(GameActions.setIndex(this.props.index + 1));
               this.props.dispatch(CountdownActions.setReady(false));
+              submitToApi(-1);
             }
           },
         ]
@@ -101,11 +102,13 @@ class Question extends Component {
   }
 
   checkAnswer() {
+    let score = -1;
     let alertTitle = '';
     console.log(this.state.answer);
     console.log(this.props.currentQuestion);
     if(this.state.answer == this.props.currentQuestion.question_answer) {
       alertTitle = 'Correct!';
+      score = 1;
     } else {
       alertTitle = 'Incorrect!';
     }
@@ -118,11 +121,66 @@ class Question extends Component {
           onPress: () => {
             this.props.dispatch(GameActions.setIndex(this.props.index + 1));
             this.props.dispatch(CountdownActions.setReady(false));
+            this.submitToApi(score);
           }
         },
       ]
     );
+  }
 
+  submitToApi(score) {
+    fetch('http://45.33.83.217/harambe/poll_match', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: this.props.user1,
+        status: score,
+        match_id: this.props.matchId,
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJSON) => console.log(responseJSON))
+  }
+
+  pollMatch() {
+    setTimeout(() => {
+      this.setState(function(previousState) {
+        return {timer: previousState.timer + 1};
+      });
+      fetch('http://45.33.83.217/harambe/poll_match', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          match_id: this.prop.matchId,
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        const currentQuestionNumber = this.props.index + 1;
+        if(responseJson.cur_question > currentQuestionNumber) {
+          Alert.alert(
+            'Too slow!',
+            'Get ready for the next question!',
+            [
+              { text: 'OK',
+                onPress: () => {
+                  this.props.dispatch(GameActions.setIndex(this.props.index + 1));
+                  this.props.dispatch(CountdownActions.setReady(false));
+                }
+              },
+            ]
+          );
+        } else {
+          this.pollMatch();
+        }
+      });
+    }, 500)
   }
 
   render() {
@@ -130,8 +188,8 @@ class Question extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.scoreView}>
-          <Text>User 1 Score</Text>
-          <Text>User 2 Score</Text>
+          <Text>{this.props.user1}</Text>
+          <Text>{this.props.user2}</Text>
         </View>
         <View style={styles.timerView}>
           <Text style={styles.timerText}>{this.state.timer}</Text>
@@ -159,4 +217,12 @@ class Question extends Component {
   }
 }
 
-export default connect()(Question);
+function mapStateToProps(state) {
+  return {
+    user1: state.gameReducers.matchUsers.user1,
+    user2: state.gameReducers.matchUsers.user2,
+    matchId: state.gameReducers.matchId,
+  }
+}
+
+export default connect(mapStateToProps)(Question);

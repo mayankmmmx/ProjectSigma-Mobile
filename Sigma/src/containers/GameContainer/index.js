@@ -29,12 +29,34 @@ class GameContainer extends Component {
   }
 
   renderGame() {
-    return (
-      <Question
-        currentQuestion={this.props.questions[this.props.index]}
-        index={this.props.index}
-      />
-    );
+    if(this.props.index > 9) {
+      const url = `http://hackforharambe.me/harambe/submit_match?p_one_id=${this.props.matchUsers.user1}&p_two_id=${this.props.matchUsers.user2}`;
+      fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log(responseJson);
+      });
+
+      return (
+        <View>
+        </View>
+      );
+    }
+    else {
+
+      return (
+        <Question
+          currentQuestion={this.props.questions[this.props.index]}
+          index={this.props.index}
+        />
+      );
+    }
   }
 
   render() {
@@ -48,10 +70,12 @@ class GameContainer extends Component {
 }
 
 function mapStateToProps(state) {
+  console.log(state);
   return {
     isReady: state.countdownReducer.isReady,
     questions: state.gameReducers.roundQuestions.questions,
     index: state.gameReducers.index,
+    matchUsers: state.gameReducers.matchUsers,
   };
 }
 

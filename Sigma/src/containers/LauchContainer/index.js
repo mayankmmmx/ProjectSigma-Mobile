@@ -1,6 +1,7 @@
 /* @flow */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Platform,
   Text,
@@ -8,10 +9,11 @@ import {
   StyleSheet,
   View,
   Image,
+  AsyncStorage,
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
-import Container from '@components/Container'
-import Title from '@components/Title'
+import Login from '@containers/LoginContainer';
+import * as LoginActions from '../../store/actions/loginActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -46,7 +48,35 @@ const styles = StyleSheet.create({
 });
 
 class LauchContainer extends Component<void, void, void> {
-  render() {
+  state = {
+    loggedIn: false,
+  }
+
+  componentWillMount() {
+    this.checkLoggedIn();
+  }
+
+  logout() {
+    AsyncStorage.clear((key) => {
+      this.props.dispatch(LoginActions.loginAction(false));
+      this.setState({ loggedIn: false });
+    });
+  }
+
+  async checkLoggedIn() {
+    const token = await AsyncStorage.getItem('auth_token');
+    if(token != null) {
+      this.setState({ loggedIn: true });
+    }
+  }
+
+  renderLogin() {
+    return (
+      <Login />
+    );
+  }
+
+  renderMenu() {
     return (
       <View style={styles.container}>
         <Image source={require('../../img/sigma.png') } style={styles.imageStyle} />
@@ -59,68 +89,36 @@ class LauchContainer extends Component<void, void, void> {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={console.log("yay")}
+            onPress={Actions.leaderboard}
           >
             <View style={styles.button}>
               <Text style={styles.textStyle}>LEADERBOARD</Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={console.log("Yay")}
+            onPress={ () => this.logout()}
           >
             <View style={styles.button}>
-              <Text style={styles.textStyle}>SETTINGS</Text>
+              <Text style={styles.textStyle}>LOG OUT</Text>
             </View>
           </TouchableOpacity>
         </View>
       </View>
     );
   }
+  render() {
+    if(this.props.isLoggedIn || this.state.loggedIn) {
+      return this.renderMenu();
+    } else {
+      return this.renderLogin();
+    }
+  }
 }
-/*
 
-<View style={styles.buttonHolder}>
-  <TouchableOpacity
-    onPress={Actions.matchQueue}
-  >
-    <Text style={styles.textStyle}>Play</Text>
-  </TouchableOpacity>
-</View>
-*/
+function mapStateToProps(state) {
+  return {
+    isLoggedIn: state.loginReducers.isLoggedIn,
+  };
+}
 
-
-export default LauchContainer;
-
-/*
-<TouchableOpacity
-  onPress={Actions.createAccount}
->
-  <Text style={styles.textStyle}>Create Account</Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  onPress={Actions.login}
->
-  <Text style={styles.textStyle}>Login</Text>
-</TouchableOpacity>
-*/
-
-/*
-<TouchableOpacity
-  onPress={Actions.game}
->
-  <Text style={styles.textStyle}>Question</Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  onPress={Actions.countdown}
->
-  <Text style={styles.textStyle}>CountDown</Text>
-</TouchableOpacity>
-
-<TouchableOpacity
-  onPress={Actions.socketIo}
->
-  <Text style={styles.textStyle}>Socket IO</Text>
-</TouchableOpacity>
-*/
+export default connect(mapStateToProps)(LauchContainer);

@@ -1,6 +1,7 @@
 /* @flow */
 
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Platform,
   Text,
@@ -12,6 +13,7 @@ import {
   Image,
 } from 'react-native';
 import { Actions } from 'react-native-router-flux';
+import * as GameActions from '../../store/actions/gameActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -36,6 +38,13 @@ const styles = StyleSheet.create({
 class MatchQueueContainer extends Component {
   state = {
     match_id: 0,
+    username: '',
+  }
+
+  async getUserName() {
+    const username = await AsyncStorage.getItem('username').then( (content) => {
+      this.setState({ username: content });
+    })
   }
 
   pollMatchStarted() {
@@ -43,50 +52,55 @@ class MatchQueueContainer extends Component {
       this.setState(function(previousState) {
         return {timer: previousState.timer + 1};
       });
-      fetch('http://45.33.83.217/harambe/poll_match', {
+      fetch('http://hackforharambe.me/harambe/poll_match', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          'match_id': this.state.match_id,
+          match_id: this.state.match_id,
         })
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson);
         if (!responseJson['status']) {
           this.pollMatchStarted();
         } else {
+          const users = {
+            user1: responseJson.p_one_id,
+            user2: responseJson.p_two_id,
+          };
+          this.props.dispatch(GameActions.setMatchUsers(users));
           Actions.game();
-          console.log('match can start now');
         }
       });
     }, 1000);
   }
 
   joinQueue() {
-    fetch('http://45.33.83.217/harambe/enter_match_queue', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        'username': AsyncStorage.getItem('username'),
+    AsyncStorage.getItem('username').then((username) => {
+      fetch('http://hackforharambe.me/harambe/enter_match_queue', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          'username': username,
+        })
       })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson.match_id != '') {
+          this.state.match_id = responseJson.match_id;
+          this.props.dispatch(GameActions.setMatchId(responseJson.match_id));
+          this.pollMatchStarted();
+        } else {
+          console.log('something gone wrong');
+        }
+      });
     })
-    .then((response) => response.json())
-    .then((responseJson) => {
-      console.log(responseJson);
-      if (responseJson.match_id != '') {
-        this.state.match_id = responseJson.match_id;
-        this.pollMatchStarted();
-      } else {
-        console.log('something gone wrong');
-      }
-    });
   }
 
   componentWillMount() {
@@ -105,4 +119,4 @@ class MatchQueueContainer extends Component {
   }
 }
 
-export default MatchQueueContainer;
+export default connect()(MatchQueueContainer);
