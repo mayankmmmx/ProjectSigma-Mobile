@@ -20,7 +20,7 @@ import * as GameActions from '../../store/actions/gameActions';
 class GameContainer extends Component {
 
   componentDidMount() {
-    this.props.dispatch(GameActions.getQuestions(1200));
+    this.props.dispatch(GameActions.getQuestions(this.props.elo1, this.props.elo2, this.props.matchId));
   }
 
   renderLoading() {
@@ -30,6 +30,7 @@ class GameContainer extends Component {
   }
 
   renderGame() {
+    console.log(this.props);
     return (
       <Question
         currentQuestion={this.props.questions[this.props.index]}
@@ -41,14 +42,17 @@ class GameContainer extends Component {
   renderResults() {
     this.props.dispatch(GameActions.submitMatchResults(this.props.matchUsers.user1, this.props.matchUsers.user2));
     return (
-      <Results />
+      <Results
+        user1={this.props.matchUsers.user1}
+        user2={this.props.matchUsers.user2}
+      />
     );
   }
 
   render() {
-    if(this.props.isReady && this.props.index < 9) {
+    if(this.props.isReady && this.props.index < 5) {
       return this.renderGame();
-    } else if(this.props.index > 8) {
+    } else if(this.props.index > 4) {
       return this.renderResults();
     } else {
       return this.renderLoading();

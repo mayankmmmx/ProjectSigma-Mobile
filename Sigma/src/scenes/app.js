@@ -12,7 +12,7 @@ import Leaderboard from '@containers/LeaderboardContainer';
 const scenes = Actions.create(
   <Scene key="app">
     <Scene key="welcome" component={LauchContainer} title="Welcome" initial={true}/>
-    <Scene key="game" component={Game} title="Game" />
+    <Scene key="game" component={Game} title="Game" passProps={true}/>
     <Scene key="login" component={Login} title="Login" />
     <Scene key="createAccount" component={CreateAccount} title="Create Account" />
     <Scene key="matchQueue" component={MatchQueue} title="Match Queue" />

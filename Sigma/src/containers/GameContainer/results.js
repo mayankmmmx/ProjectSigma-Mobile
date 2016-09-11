@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
+import * as GameActions from '../../store/actions/gameActions';
 
 const styles = StyleSheet.create({
   container: {

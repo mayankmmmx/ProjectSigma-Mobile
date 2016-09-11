@@ -1,7 +1,9 @@
 import * as ActionTypes from '../ActionType';
 
-export function getQuestions(averageElo) {
-  const url = `http://hackforharambe.me/harambe/get_questions?elo=${averageElo}`;
+export function getQuestions(elo1, elo2, matchId) {
+  const averageElo = (elo1 + elo2) / 2;
+  const url = `http://hackforharambe.me/harambe/get_questions?elo=${averageElo}&match_id=${matchId}`;
+  console.log(url);
   return (dispatch) => {
     fetch(url, {
       method: 'GET',

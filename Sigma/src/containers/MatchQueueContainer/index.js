@@ -72,7 +72,29 @@ class MatchQueueContainer extends Component {
             user2: responseJson.p_two_id,
           };
           this.props.dispatch(GameActions.setMatchUsers(users));
-          Actions.game();
+          const url1 = `http://hackforharambe.me/harambe/get_user?username=${users.user1}`;
+          fetch(url1, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          })
+          .then((response2) => response2.json())
+          .then((responseJson2) => {
+            const url2 = `http://hackforharambe.me/harambe/get_user?username=${users.user2}`;
+            fetch(url2, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+            })
+            .then((response3) => response3.json())
+            .then((responseJson3) => {
+              Actions.game({matchId: this.state.match_id, elo1: responseJson2['elo'], elo2: responseJson3['elo']});
+            })
+          })
         }
       });
     }, 1000);

@@ -78,7 +78,6 @@ class Question extends Component {
 
   decrement() {
     let currentTime = this.state.timer;
-    console.log(currentTime);
     if(currentTime > 0) {
       setTimeout(() => {
         currentTime--;
